@@ -231,7 +231,15 @@ if __name__ == '__main__':
 
 ## Interfaces 
 
-![Alt text](URL_or_path_to_image)
-![Alt text](URL_or_path_to_image)
-![Alt text](URL_or_path_to_image)
-![Alt text](URL_or_path_to_image)
+![Alt text](Screenshot 2025-06-20 173036.png)
+
+![Alt text](Screenshot 2025-06-20 173233.png)
+
+![Alt text](Screenshot 2025-06-20 173259.png)
+
+![Alt text](Screenshot 2025-06-20 173316.png)
+
+
+
+
+
