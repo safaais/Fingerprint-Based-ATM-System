@@ -231,13 +231,13 @@ if __name__ == '__main__':
 
 ## Interfaces 
 
-![Alt text](Screenshot 2025-06-20 173036.png)
+![Alt text](interface1.png)
 
-![Alt text](Screenshot 2025-06-20 173233.png)
+![Alt text](interface2.png)
 
-![Alt text](Screenshot 2025-06-20 173259.png)
+![Alt text](interface3.png)
 
-![Alt text](Screenshot 2025-06-20 173316.png)
+![Alt text](interface4.png)
 
 
 
