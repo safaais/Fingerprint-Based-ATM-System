@@ -1,6 +1,6 @@
 # Fingerprint-Based ATM System
 
-## Table of Contents
+## Contents
 - [Overview](#overview)
 - [Features](#features)
 - [Requirements](#requirements)
@@ -85,7 +85,7 @@ The Fingerprint-Based ATM System replaces traditional PIN-based ATM authenticati
 ## Main Parts of Code
 
 ### 1. Fingerprint Authentication
-```python
+```
 from pyfingerprint.pyfingerprint import PyFingerprint
 
 def enroll_fingerprint():
@@ -126,3 +126,108 @@ def authenticate_fingerprint():
                 return False
     except Exception as e:
         print(f"Error: {e}")
+```
+
+### 2. Database Management
+```
+import sqlite3
+
+def initialize_database():
+    conn = sqlite3.connect('atm_system.db')
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            fingerprint_template BLOB NOT NULL,
+            balance REAL DEFAULT 0.0
+        )
+    """)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS transactions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER,
+            type TEXT,
+            amount REAL,
+            date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(user_id) REFERENCES users(id)
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+def add_user(name, fingerprint_template, initial_balance):
+    conn = sqlite3.connect('atm_system.db')
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO users (name, fingerprint_template, balance)
+        VALUES (?, ?, ?)
+    """, (name, fingerprint_template, initial_balance))
+    conn.commit()
+    conn.close()
+
+```
+
+### 3. ATM Transactions
+```
+def check_balance(user_id):
+    conn = sqlite3.connect('atm_system.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT balance FROM users WHERE id = ?", (user_id,))
+    balance = cursor.fetchone()[0]
+    conn.close()
+    return balance
+
+def update_balance(user_id, amount, transaction_type):
+    conn = sqlite3.connect('atm_system.db')
+    cursor = conn.cursor()
+
+    # Update balance
+    cursor.execute("""
+        UPDATE users SET balance = balance + ? WHERE id = ?
+    """, (amount if transaction_type == 'deposit' else -amount, user_id))
+
+    # Record transaction
+    cursor.execute("""
+        INSERT INTO transactions (user_id, type, amount) VALUES (?, ?, ?)
+    """, (user_id, transaction_type, amount))
+    conn.commit()
+    conn.close()
+```
+
+### 4. Integration
+```
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+@app.route('/authenticate', methods=['POST'])
+def authenticate():
+    if authenticate_fingerprint():
+        return jsonify({"status": "success", "message": "Authentication successful."})
+    else:
+        return jsonify({"status": "fail", "message": "Authentication failed."})
+
+@app.route('/balance', methods=['GET'])
+def balance():
+    user_id = request.args.get('user_id')
+    balance = check_balance(user_id)
+    return jsonify({"user_id": user_id, "balance": balance})
+
+@app.route('/transaction', methods=['POST'])
+def transaction():
+    data = request.json
+    user_id = data['user_id']
+    amount = data['amount']
+    transaction_type = data['type']
+    update_balance(user_id, amount, transaction_type)
+    return jsonify({"status": "success", "message": f"{transaction_type.capitalize()} completed."})
+
+if __name__ == '__main__':
+    initialize_database()
+    app.run(debug=True)
+
+```
+
+## Interfaces 
+
