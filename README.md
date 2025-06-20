@@ -231,3 +231,7 @@ if __name__ == '__main__':
 
 ## Interfaces 
 
+![Alt text](URL_or_path_to_image)
+![Alt text](URL_or_path_to_image)
+![Alt text](URL_or_path_to_image)
+![Alt text](URL_or_path_to_image)
